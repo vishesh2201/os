@@ -1,0 +1,71 @@
+#include <stdio.h>
+
+void findTimes(int n, int bt[], int quantum) {
+    int wt[n], tat[n], rem_bt[n], t = 0, total_wt = 0, total_tat = 0;
+    
+    // Copy burst times to remaining burst time array
+    for (int i = 0; i < n; i++) 
+        rem_bt[i] = bt[i];
+
+    // Process until all processes are done
+    while (1) {
+        int done = 1;
+        
+        for (int i = 0; i < n; i++) {
+            if (rem_bt[i] > 0) {
+                done = 0; // There is a pending process
+                int slice = (rem_bt[i] > quantum) ? quantum : rem_bt[i];
+                t += slice;
+                rem_bt[i] -= slice;
+
+                if (rem_bt[i] == 0) // If the process is fully executed
+                    wt[i] = t - bt[i];
+            }
+        }
+
+        if (done) break;
+    }
+
+    // Calculate turnaround time and print
+    printf("PN\tBT\tWT\tTAT\n");
+    for (int i = 0; i < n; i++) {
+        tat[i] = bt[i] + wt[i];
+        total_wt += wt[i];
+        total_tat += tat[i];
+        printf("%d\t%d\t%d\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+    }
+
+    printf("Avg WT = %.2f\n", (float)total_wt / n);
+    printf("Avg TAT = %.2f\n", (float)total_tat / n);
+}
+
+int main() {
+    int n, quantum;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    int bt[n];
+    
+    for (int i = 0; i < n; i++) {
+        printf("Enter burst time for P%d: ", i + 1);
+        scanf("%d", &bt[i]);
+    }
+
+    printf("Enter time quantum: ");
+    scanf("%d", &quantum);
+
+    findTimes(n, bt, quantum);
+    return 0;
+}
+
+
+
+/*output
+Enter number of processes: 4
+Enter burst time for P1: 5
+Enter burst time for P2: 10
+Enter burst time for P3: 8
+Enter burst time for P4: 6
+Enter time quantum: 4
+
+
+*/
